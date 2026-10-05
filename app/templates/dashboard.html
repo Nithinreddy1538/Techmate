@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechMate AI — Voice Teaching & Calling Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              greenLight: '#e6fcf5',
+              greenMint: '#10b981',
+              greenSoft: '#a7f3d0',
+              pinkLight: '#fff1f2',
+              pinkRose: '#f43f5e',
+              pinkSoft: '#fbcfe8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes float-slow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-16px) rotate(2deg); }
+    }
+    @keyframes float-reverse {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(14px) rotate(-2deg); }
+    }
+    @keyframes pulse-halo {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4), 0 0 0 10px rgba(244, 63, 94, 0.15);
+      }
+      50% {
+        box-shadow: 0 0 0 12px rgba(16, 185, 129, 0.15), 0 0 0 24px rgba(244, 63, 94, 0.25);
+      }
+    }
+    @keyframes soundwave {
+      0%, 100% { height: 8px; }
+      50% { height: 38px; }
+    }
+    .float-orb-1 { animation: float-slow 8s infinite ease-in-out; }
+    .float-orb-2 { animation: float-reverse 9s infinite ease-in-out; }
+    .pulse-avatar { animation: pulse-halo 3s infinite cubic-bezier(0.4, 0, 0.6, 1); }
+    .wave-bar {
+      animation: soundwave 1.1s infinite ease-in-out;
+    }
+    .wave-bar:nth-child(1) { animation-delay: 0.05s; }
+    .wave-bar:nth-child(2) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.35s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.15s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(6) { animation-delay: 0.45s; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-emerald-50 via-pink-50/60 to-teal-50/80 text-slate-850 flex flex-col justify-between p-4 sm:p-8 relative overflow-x-hidden selection:bg-pink-400 selection:text-white">
+
+  <!-- Background Animated Aesthetic Glow Orbs (Light Green with Pink shades) -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+    <div class="absolute -top-20 -left-20 w-96 h-96 bg-emerald-200/50 rounded-full blur-3xl float-orb-1"></div>
+    <div class="absolute top-1/3 -right-20 w-[420px] h-[420px] bg-pink-200/60 rounded-full blur-3xl float-orb-2"></div>
+    <div class="absolute -bottom-20 left-1/4 w-[480px] h-[480px] bg-teal-200/40 rounded-full blur-3xl float-orb-1"></div>
+    <div class="absolute bottom-10 right-1/3 w-80 h-80 bg-rose-200/40 rounded-full blur-3xl float-orb-2"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="max-w-xl mx-auto w-full mb-6 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-400 via-teal-400 to-pink-400 flex items-center justify-center shadow-lg shadow-emerald-400/25 text-white font-bold text-xl">
+        🎓
+      </div>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-800 via-teal-700 to-pink-700 bg-clip-text text-transparent">
+          TechMate AI
+        </h1>
+        <p class="text-xs text-slate-500 font-medium">Voice Teaching & Free Interactive Calling</p>
+      </div>
+    </div>
+    
+    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100/80 text-emerald-800 border border-emerald-300/60 shadow-sm">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      100% Free Voice Ready
+    </span>
+  </header>
+
+  <!-- Central Simple Interactive Card -->
+  <main class="max-w-xl mx-auto w-full flex-1 flex flex-col justify-center">
+    <div class="bg-white/90 backdrop-blur-xl border border-pink-200/80 rounded-3xl p-6 sm:p-8 shadow-[0_20px_50px_-15px_rgba(244,63,94,0.18)] transition-all hover:shadow-[0_25px_60px_-15px_rgba(16,185,129,0.22)] relative overflow-hidden">
+      
+      <!-- Top Card Header & Avatar Badge -->
+      <div class="flex items-center justify-between pb-5 border-b border-pink-100">
+        <div class="flex items-center gap-3.5">
+          <div class="relative">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-400 to-pink-400 p-0.5 pulse-avatar">
+              <div class="w-full h-full rounded-[14px] bg-white flex items-center justify-center text-2xl">
+                👩‍🏫
+              </div>
+            </div>
+            <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-slate-800">AI Teacher & Caller</h2>
+            <p class="text-xs text-slate-500">Calls devices, teaches topics & gathers voice feedback</p>
+          </div>
+        </div>
+
+        <div class="text-right">
+          <span class="text-[10px] font-semibold tracking-wider text-pink-600 uppercase bg-pink-50 px-2.5 py-1 rounded-full border border-pink-200">
+            Voice Agent
+          </span>
+        </div>
+      </div>
+
+      <!-- Form Inputs: Name, Recipient Phone, Fake/Display Caller ID, Topic -->
+      <form id="teaching-call-form" onsubmit="event.preventDefault(); submitTeachingCall();" class="mt-6 space-y-4">
+        
+        <!-- Recipient Name -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            👤 Recipient Name <span class="text-pink-500">*</span>
+          </label>
+          <input 
+            id="recipient-name" 
+            type="text" 
+            value="Nithin Kumar" 
+            required 
+            placeholder="e.g. Alex Johnson" 
+            class="w-full bg-emerald-50/40 border border-emerald-200/90 rounded-2xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 transition"
+          >
+        </div>
+
+        <!-- Phone Number & Fake/Custom Caller ID Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <!-- Recipient Phone Number -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              📞 Phone Number <span class="text-pink-500">*</span>
+            </label>
+            <input 
+              id="phone-number" 
+              type="tel" 
+              value="+916302807060" 
+              required 
+              placeholder="+91..." 
+              class="w-full bg-emerald-50/40 border border-emerald-200/90 rounded-2xl px-4 py-2.5 text-sm text-slate-800 font-mono placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 transition"
+            >
+          </div>
+
+          <!-- Fake/Virtual Caller ID -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+              <span>🎭 Fake Caller ID</span>
+              <span class="text-[10px] text-pink-500 font-normal">Display Only</span>
+            </label>
+            <input 
+              id="caller-id" 
+              type="text" 
+              value="+1 (800) 555-0199" 
+              placeholder="e.g. +1 (800) 832-4628" 
+              class="w-full bg-pink-50/40 border border-pink-200/90 rounded-2xl px-4 py-2.5 text-sm text-slate-800 font-mono placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400 transition"
+            >
+          </div>
+        </div>
+
+        <!-- Topic Description to Teach -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+              📖 Topic to Speak & Teach <span class="text-pink-500">*</span>
+            </label>
+            <span class="text-[10px] text-slate-400">Bot teaches & gathers thoughts</span>
+          </div>
+          <textarea 
+            id="topic-description" 
+            rows="3" 
+            required 
+            placeholder="Describe what the AI teacher should explain and teach on the call..." 
+            class="w-full bg-emerald-50/40 border border-emerald-200/90 rounded-2xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 transition leading-relaxed resize-none"
+          >Python Object Oriented Programming: explaining classes, objects, and why encapsulation keeps code secure.</textarea>
+        </div>
+
+        <!-- Quick Topic Suggestion Chips -->
+        <div>
+          <p class="text-[11px] font-semibold text-slate-500 mb-1.5">Quick Topic Ideas:</p>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="setTopic('Python Object-Oriented Programming (Classes & Objects)')" class="text-[11px] font-medium bg-emerald-100/60 hover:bg-emerald-200/70 text-emerald-800 border border-emerald-300/50 px-2.5 py-1 rounded-full transition">
+              🐍 Python OOP
+            </button>
+            <button type="button" onclick="setTopic('Generative AI and Large Language Models: How Transformers work')" class="text-[11px] font-medium bg-pink-100/60 hover:bg-pink-200/70 text-pink-800 border border-pink-300/50 px-2.5 py-1 rounded-full transition">
+              🤖 Gen AI 101
+            </button>
+            <button type="button" onclick="setTopic('Cybersecurity Essentials: How to spot and defend against phishing attacks')" class="text-[11px] font-medium bg-teal-100/60 hover:bg-teal-200/70 text-teal-800 border border-teal-300/50 px-2.5 py-1 rounded-full transition">
+              🛡️ Cybersecurity
+            </button>
+            <button type="button" onclick="setTopic('Cloud Computing and FastAPI: Building scalable microservices')" class="text-[11px] font-medium bg-rose-100/60 hover:bg-rose-200/70 text-rose-800 border border-rose-300/50 px-2.5 py-1 rounded-full transition">
+              ⚡ FastAPI
+            </button>
+          </div>
+        </div>
+
+        <!-- Soundwave Animated Bar (Shown during speech / call) -->
+        <div id="soundwave-container" class="hidden flex items-center justify-center gap-1.5 h-10 py-2 bg-gradient-to-r from-emerald-50 via-pink-50 to-teal-50 rounded-2xl border border-pink-200">
+          <span class="text-xs font-semibold text-pink-600 mr-2">Speaking Lesson:</span>
+          <div class="w-1.5 bg-emerald-400 rounded-full wave-bar"></div>
+          <div class="w-1.5 bg-pink-400 rounded-full wave-bar"></div>
+          <div class="w-1.5 bg-teal-400 rounded-full wave-bar"></div>
+          <div class="w-1.5 bg-rose-400 rounded-full wave-bar"></div>
+          <div class="w-1.5 bg-emerald-400 rounded-full wave-bar"></div>
+          <div class="w-1.5 bg-pink-400 rounded-full wave-bar"></div>
+        </div>
+
+        <!-- Primary Action Buttons -->
+        <div class="pt-2 flex flex-col sm:flex-row gap-3">
+          <!-- Submit / Dispatch Call Button -->
+          <button 
+            type="submit" 
+            id="dispatch-btn" 
+            class="flex-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-pink-500 hover:from-emerald-600 hover:to-pink-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-pink-500/20 hover:shadow-emerald-500/30 transition-all flex items-center justify-center gap-2 text-sm"
+          >
+            <span>📞</span> <span id="dispatch-btn-text">Call & Teach Topic</span>
+          </button>
+
+          <!-- Listen to Spoken Lesson Preview Button -->
+          <button 
+            type="button" 
+            id="listen-btn" 
+            onclick="playLessonAudio()" 
+            class="sm:w-auto px-5 py-3.5 bg-pink-100 hover:bg-pink-200 text-pink-700 border border-pink-300 font-bold rounded-2xl transition-all flex items-center justify-center gap-2 text-sm shadow-sm"
+          >
+            <span id="listen-icon">🔊</span> <span id="listen-text">Listen Lesson</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Live Call & Teaching Status Box -->
+      <div id="status-card" class="mt-5 p-4 rounded-2xl border bg-emerald-50/70 border-emerald-200/80 hidden transition-all">
+        <div class="flex items-center justify-between mb-2">
+          <span id="status-badge" class="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            Call Dispatched & Ringing!
+          </span>
+          <span id="caller-id-display" class="text-[11px] font-mono text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200"></span>
+        </div>
+        
+        <!-- Spoken dialogue generated by Gemini -->
+        <div class="bg-white/80 rounded-xl p-3 border border-pink-100 text-xs text-slate-700 leading-relaxed my-2 shadow-inner">
+          <span class="font-bold text-pink-600 block mb-1">🤖 Spoken Teaching Script:</span>
+          <p id="spoken-text-display">Generating lesson...</p>
+        </div>
+
+        <div id="status-notice" class="text-[11px] text-slate-500 mt-2"></div>
+
+        <!-- Instant 100% Free Incoming Call Launcher with QR Code -->
+        <div id="device-call-box" class="mt-3 pt-3 border-t border-emerald-200/70">
+          <div class="flex items-center justify-between mb-1.5">
+            <p class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+              <span>📲</span> <span>Ring & Answer Call on Mobile (100% Free):</span>
+            </p>
+            <span id="live-call-tag" class="text-[10px] font-mono text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">Ringing 🔔</span>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row items-center gap-4 bg-white/70 p-3 rounded-2xl border border-emerald-200/80 my-2">
+            <!-- QR Code -->
+            <div class="flex flex-col items-center">
+              <img id="qr-code-img" src="" alt="Scan QR Code" class="w-24 h-24 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+              <span class="text-[10px] text-slate-500 font-medium mt-1">Scan with phone camera</span>
+            </div>
+            <!-- Quick Actions -->
+            <div class="flex-1 w-full space-y-2">
+              <p class="text-xs text-slate-600">Scan this QR code with any smartphone camera or click below to receive the incoming call with full voice teaching:</p>
+              <div class="flex items-center gap-2">
+                <a id="open-device-call-btn" href="#" target="_blank" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-2 px-3 rounded-xl text-xs text-center shadow transition flex items-center justify-center gap-1.5">
+                  <span>📞</span> Ring & Answer Call
+                </a>
+                <button type="button" onclick="copyCallLink()" class="px-3 py-2 bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 rounded-xl text-xs font-semibold transition shadow-sm">
+                  📋 Copy Link
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ElevenLabs Live Interactive Voice Call Widget (Below Card) -->
+      <div class="mt-6 pt-5 border-t border-pink-100 flex flex-col items-center text-center">
+        <p class="text-xs font-semibold text-slate-600 mb-2">Or speak live in your browser using microphone:</p>
+        <div class="p-2 bg-gradient-to-r from-emerald-50 to-pink-50 rounded-2xl border border-pink-200 flex items-center justify-center min-h-[85px] w-full">
+          <elevenlabs-convai agent-id="agent_4301m45g9kh5fhnan5hr4dr1adk1"></elevenlabs-convai>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Audio Element for Lesson Playback -->
+  <audio id="lesson-audio-player" src="/api/lesson-audio" preload="auto"></audio>
+
+  <!-- Footer -->
+  <footer class="max-w-xl mx-auto w-full text-center py-4 text-xs font-medium text-slate-500">
+    TechMate AI • Powered by Gemini 3.5 & ElevenLabs Conversational Voice • 100% Free Calling
+  </footer>
+
+  <!-- ElevenLabs Official Custom Widget Script -->
+  <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+
+  <script>
+    let activeCallPollInterval = null;
+
+    function setTopic(text) {
+      document.getElementById('topic-description').value = text;
+    }
+
+    async function submitTeachingCall() {
+      const name = document.getElementById('recipient-name').value.trim();
+      const phone = document.getElementById('phone-number').value.trim();
+      const callerId = document.getElementById('caller-id').value.trim();
+      const topic = document.getElementById('topic-description').value.trim();
+
+      const btn = document.getElementById('dispatch-btn');
+      const btnText = document.getElementById('dispatch-btn-text');
+      const statusCard = document.getElementById('status-card');
+      const statusBadge = document.getElementById('status-badge');
+      const callerIdDisplay = document.getElementById('caller-id-display');
+      const spokenTextDisplay = document.getElementById('spoken-text-display');
+      const statusNotice = document.getElementById('status-notice');
+
+      btn.disabled = true;
+      btnText.innerText = "Synthesizing & Calling...";
+      document.getElementById('soundwave-container').classList.remove('hidden');
+
+      statusCard.classList.remove('hidden');
+      statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span> AI Generating Lesson...`;
+      callerIdDisplay.innerText = `Display ID: ${callerId || '+1 (800) 555-0199'}`;
+      spokenTextDisplay.innerText = `Gemini AI is crafting a tailored lesson on "${topic}" for ${name}...`;
+      statusNotice.innerText = "Synthesizing high quality voice speech...";
+
+      try {
+        const response = await fetch('/api/teaching-call', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            recipient_name: name,
+            phone_number: phone,
+            caller_id: callerId,
+            topic: topic
+          })
+        });
+
+        const data = await response.json();
+
+        // Display spoken lesson text
+        spokenTextDisplay.innerText = data.spoken_text || "Lesson generated successfully.";
+
+        // Reload audio element so the newly synthesized lesson is playable
+        const audio = document.getElementById('lesson-audio-player');
+        audio.src = '/api/lesson-audio?t=' + Date.now();
+        audio.load();
+
+        // Set up the 100% free incoming call link for any other device
+        const networkHost = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+          ? '192.168.147.115:8000'
+          : window.location.host;
+        const callLink = `${window.location.protocol}//${networkHost}/receive-call?name=${encodeURIComponent(name)}&caller_id=${encodeURIComponent(callerId)}&topic=${encodeURIComponent(topic)}`;
+        
+        document.getElementById('open-device-call-btn').href = callLink;
+
+        // Generate QR code for mobile camera scan
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(callLink)}`;
+        document.getElementById('qr-code-img').src = qrUrl;
+
+        statusBadge.className = "text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5";
+        statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> 📲 Call Ringing!`;
+        statusNotice.innerHTML = `AI Call dispatched from <strong>${callerId}</strong> to <strong>${name}</strong> (${phone})! Scan the QR code or click <strong>"Ring & Answer Call"</strong> to pick up the call and hear the lesson!`;
+
+        // Start listening to the call status
+        startCallMonitoring();
+
+      } catch (err) {
+        statusBadge.innerHTML = `❌ Error Occurred`;
+        statusNotice.innerText = err.message;
+      } finally {
+        btn.disabled = false;
+        btnText.innerText = "Call & Teach Topic";
+        document.getElementById('soundwave-container').classList.add('hidden');
+      }
+    }
+
+    function startCallMonitoring() {
+      if (activeCallPollInterval) clearInterval(activeCallPollInterval);
+      activeCallPollInterval = setInterval(async () => {
+        try {
+          const res = await fetch('/api/active-call');
+          const data = await res.json();
+          const tag = document.getElementById('live-call-tag');
+          if (data.status === 'ringing') {
+            tag.innerText = "Ringing 🔔";
+            tag.className = "text-[10px] font-mono text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full font-bold animate-pulse";
+          } else if (data.status === 'in_call') {
+            tag.innerText = "Connected & Speaking 🟢";
+            tag.className = "text-[10px] font-mono text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-bold";
+            document.getElementById('status-badge').innerHTML = `🟢 Call Connected & Speaking!`;
+          } else if (data.status === 'ended') {
+            tag.innerText = "Call Ended ⏹️";
+            tag.className = "text-[10px] font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full font-bold";
+            document.getElementById('status-badge').innerHTML = `⏹️ Call Completed`;
+          }
+        } catch (e) {}
+      }, 1500);
+    }
+
+    function playLessonAudio() {
+      const audio = document.getElementById('lesson-audio-player');
+      const text = document.getElementById('listen-text');
+      const icon = document.getElementById('listen-icon');
+      const wave = document.getElementById('soundwave-container');
+
+      if (audio.paused) {
+        audio.play().catch(e => {
+          alert("Audio preview loading. Please click 'Call & Teach Topic' to generate a new lesson first!");
+        });
+        text.innerText = "Playing...";
+        icon.innerText = "⏸️";
+        wave.classList.remove('hidden');
+
+        audio.onended = () => {
+          text.innerText = "Listen Lesson";
+          icon.innerText = "🔊";
+          wave.classList.add('hidden');
+        };
+      } else {
+        audio.pause();
+        text.innerText = "Listen Lesson";
+        icon.innerText = "🔊";
+        wave.classList.add('hidden');
+      }
+    }
+
+    function copyCallLink() {
+      const link = document.getElementById('open-device-call-btn').href;
+      navigator.clipboard.writeText(link).then(() => {
+        alert("📲 Incoming Call Link Copied!\n\nOpen this link on your mobile phone or any other device. It will ring like an incoming phone call, letting you answer and listen to the AI Teacher!");
+      }).catch(() => {
+        prompt("Copy this call link and open it on your other device:", link);
+      });
+    }
+  </script>
+</body>
+</html>

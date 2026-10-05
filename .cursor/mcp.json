@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "ElevenLabs": {
+      "command": "C:\\Users\\Administrator\\OneDrive\\Desktop\\techmate-ai\\venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\Users\\Administrator\\OneDrive\\Desktop\\techmate-ai\\venv\\Lib\\site-packages\\elevenlabs_mcp\\server.py"
+      ],
+      "env": {
+        "ELEVENLABS_API_KEY": "sk_0ed81e4c28bef930bf7a05c7e6058e50a47b41faf0005eaa"
+      }
+    }
+  }
+}
