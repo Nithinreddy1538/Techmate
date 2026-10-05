@@ -242,7 +242,25 @@
             <span id="listen-icon">🔊</span> <span id="listen-text">Listen Lesson</span>
           </button>
         </div>
+
+        <!-- Cellular Phone Diagnostic Link -->
+        <div class="text-center pt-1">
+          <button type="button" onclick="checkTwilioStatus()" class="text-[11px] text-slate-500 hover:text-pink-600 transition inline-flex items-center gap-1 font-medium">
+            <span>⚙️</span> <span class="underline">Check Physical Mobile (Twilio) Status</span>
+          </button>
+        </div>
       </form>
+
+      <!-- Twilio Diagnostic Panel -->
+      <div id="twilio-diag-panel" class="mt-4 p-4 rounded-2xl border border-slate-200 bg-slate-50 hidden text-xs transition-all">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+          <span class="font-bold text-slate-800">📡 Twilio Cellular Network Diagnostics</span>
+          <button type="button" onclick="document.getElementById('twilio-diag-panel').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+        <div id="twilio-diag-content" class="mt-2 space-y-1.5 text-slate-600 text-[11px]">
+          Loading carrier diagnostics...
+        </div>
+      </div>
 
       <!-- Live Call & Teaching Status Box -->
       <div id="status-card" class="mt-5 p-4 rounded-2xl border bg-emerald-50/70 border-emerald-200/80 hidden transition-all">
@@ -380,9 +398,29 @@
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(callLink)}`;
         document.getElementById('qr-code-img').src = qrUrl;
 
-        statusBadge.className = "text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5";
-        statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> 📲 Call Ringing!`;
-        statusNotice.innerHTML = `AI Call dispatched from <strong>${callerId}</strong> to <strong>${name}</strong> (${phone})! Scan the QR code or click <strong>"Ring & Answer Call"</strong> to pick up the call and hear the lesson!`;
+        if (data.call_result && data.call_result.status === 'success') {
+          statusBadge.className = "text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5";
+          statusBadge.innerHTML = `✅ Real SIM Cellular Call Placed! SID: ${data.call_result.call_sid}`;
+          statusNotice.innerHTML = `Twilio carrier network is ringing <strong>${phone}</strong>! Pick up the phone to answer.`;
+        } else {
+          statusBadge.className = "text-xs font-bold uppercase tracking-wider text-amber-700 flex items-center gap-1.5";
+          statusBadge.innerHTML = `⚠️ Physical SIM Call Blocked by Carrier (Twilio Trial)`;
+          const errorMsg = data.call_result?.message || "Trial parameter restriction";
+          const errorDetails = data.call_result?.details || "Twilio trial accounts require an active purchased Twilio number and verified recipient number to dial cellular networks.";
+          statusNotice.innerHTML = `
+            <div class="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900 text-xs my-1 space-y-1">
+              <p class="font-bold flex items-center gap-1.5">
+                <span>⚠️</span> <span>Why did your physical mobile SIM not ring?</span>
+              </p>
+              <p class="text-[11px] leading-relaxed text-amber-800">
+                <strong>Twilio Notice:</strong> ${errorMsg}. ${errorDetails}
+              </p>
+            </div>
+            <div class="mt-2 text-emerald-800 text-xs font-semibold leading-relaxed">
+              💡 <strong>Instant 100% Free Solution:</strong> The AI Voice Teacher is ready and ringing right now on the web receiver! Scan the QR code or tap <strong>"Ring & Answer Call"</strong> below to answer the incoming call and hear the lesson:
+            </div>
+          `;
+        }
 
         // Start listening to the call status
         startCallMonitoring();
@@ -447,13 +485,43 @@
       }
     }
 
-    function copyCallLink() {
-      const link = document.getElementById('open-device-call-btn').href;
-      navigator.clipboard.writeText(link).then(() => {
-        alert("📲 Incoming Call Link Copied!\n\nOpen this link on your mobile phone or any other device. It will ring like an incoming phone call, letting you answer and listen to the AI Teacher!");
-      }).catch(() => {
-        prompt("Copy this call link and open it on your other device:", link);
-      });
+    async function checkTwilioStatus() {
+      const panel = document.getElementById('twilio-diag-panel');
+      const content = document.getElementById('twilio-diag-content');
+      panel.classList.remove('hidden');
+      content.innerHTML = `<span class="animate-pulse">Connecting to Twilio carrier API...</span>`;
+
+      try {
+        const res = await fetch('/api/twilio-status');
+        const data = await res.json();
+
+        if (!data.configured) {
+          content.innerHTML = `<p class="text-rose-600 font-bold">❌ Configuration Error: ${data.error}</p>`;
+          return;
+        }
+
+        let html = `
+          <div class="grid grid-cols-2 gap-2 my-1">
+            <div><strong>Account Tier:</strong> ${data.account_type} (${data.account_status})</div>
+            <div><strong>Can Call Physical SIM:</strong> <span class="${data.can_call_cellular ? 'text-emerald-600 font-bold' : 'text-amber-600 font-bold'}">${data.can_call_cellular ? 'YES' : 'NO (Setup needed)'}</span></div>
+            <div><strong>Active Numbers in Twilio:</strong> ${data.active_twilio_numbers.length > 0 ? data.active_twilio_numbers.join(', ') : '<span class="text-rose-600 font-bold">0 Numbers Found</span>'}</div>
+            <div><strong>Verified Recipient Numbers:</strong> ${data.verified_recipient_numbers.length > 0 ? data.verified_recipient_numbers.join(', ') : '<span class="text-rose-600 font-bold">0 Verified Numbers</span>'}</div>
+          </div>
+        `;
+
+        if (data.diagnosis && data.diagnosis.length > 0) {
+          html += `<div class="mt-2 p-2 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 space-y-1">
+            <p class="font-bold text-xs">Diagnostic Analysis:</p>
+            <ul class="list-disc list-inside text-[11px] space-y-0.5">
+              ${data.diagnosis.map(d => `<li>${d}</li>`).join('')}
+            </ul>
+          </div>`;
+        }
+
+        content.innerHTML = html;
+      } catch (err) {
+        content.innerHTML = `<p class="text-rose-600">Failed to query Twilio: ${err.message}</p>`;
+      }
     }
   </script>
 </body>

@@ -99,6 +99,63 @@ def health_check():
     }
 
 
+@app.get("/api/twilio-status")
+def get_twilio_status():
+    """
+    Live diagnostic endpoint to check Twilio carrier readiness for physical SIM calls.
+    """
+    account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+    auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+    env_from_number = os.getenv("TWILIO_PHONE_NUMBER")
+
+    if not account_sid or not auth_token:
+        return {
+            "configured": False,
+            "can_call_cellular": False,
+            "error": "TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN is missing in .env",
+        }
+
+    try:
+        from twilio.rest import Client
+        client = Client(account_sid, auth_token)
+        acct = client.api.accounts(account_sid).fetch()
+        incoming = [n.phone_number for n in client.incoming_phone_numbers.list()]
+        outgoing = [n.phone_number for n in client.outgoing_caller_ids.list()]
+
+        has_number = len(incoming) > 0
+        from_valid = env_from_number in incoming if env_from_number else False
+
+        diagnosis = []
+        if acct.type == "Trial":
+            diagnosis.append("Twilio Account is on Free Trial tier.")
+            if not incoming:
+                diagnosis.append("You have 0 active Twilio numbers. Go to Twilio Console and click 'Get Phone Number'.")
+            elif not from_valid:
+                diagnosis.append(f"TWILIO_PHONE_NUMBER in .env ({env_from_number}) does not match your active Twilio numbers ({incoming}).")
+            if not outgoing:
+                diagnosis.append("No numbers verified. Twilio Trial accounts require verifying recipient numbers via SMS before dialing them.")
+            diagnosis.append("Twilio Trial restricts dialing Indian SIM cards (+91) over cellular towers unless upgraded with balance.")
+
+        return {
+            "configured": True,
+            "account_status": acct.status,
+            "account_type": acct.type,
+            "active_twilio_numbers": incoming,
+            "verified_recipient_numbers": outgoing,
+            "env_from_number": env_from_number,
+            "from_number_valid": from_valid,
+            "can_call_cellular": has_number and len(outgoing) > 0,
+            "diagnosis": diagnosis,
+        }
+    except Exception as e:
+        return {
+            "configured": False,
+            "can_call_cellular": False,
+            "error": str(e),
+        }
+
+
+
 @app.get("/api/signed-url")
 def get_signed_url():
     """
